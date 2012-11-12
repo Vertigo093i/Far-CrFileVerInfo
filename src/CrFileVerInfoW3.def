@@ -1,0 +1,8 @@
+;LIBRARY      "CrFileVerInfoW3"
+;DESCRIPTION  'Creware FileVersionInfo Plugin'
+
+EXPORTS
+  SetStartupInfoW
+  GetGlobalInfoW
+  GetPluginInfoW
+  OpenW

@@ -1,5 +1,5 @@
-LIBRARY      "CrFileVerInfo"
-DESCRIPTION  'Creware FileVersionInfo Plugin'
+;LIBRARY      "CrFileVerInfo"
+;DESCRIPTION  'Creware FileVersionInfo Plugin'
 
 EXPORTS
   SetStartupInfo
