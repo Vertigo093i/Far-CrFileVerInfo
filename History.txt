@@ -1,0 +1,37 @@
+
+    Creware File Version Info plugin for FAR Manager.
+
+    History of versions.
+
+1.2 - released in May 14, 2006 by Alexander Ogorodnikov
+
+    Bugs fixed:
+
+    - the FILEOS field is displayed correctly now
+    - all strings are converted to the OEM code page
+
+    New features:
+
+    - changed algorithm of selecting string information block:
+      now we firstly try to open English string information block and
+      secondly string information block with the system default language
+      (this is the Windows Explorer behavior)
+    - the copyright '\A9' and registered trademark '\xAE' characters
+      are replaced with "(C)" and "(R)" respectively
+    - language information is displayed now
+    - added support for VxD file subtype (which is device ID)
+    - the plugin is removed from the internal editor menu
+
+    Cosmetic changes:
+
+    - "Creware FileVersionInfo v1.1" changed to "Version Info"
+    - "CrFileVersionInfo" changed to "Version Info"
+    - "Version flags" changed to "File flags"
+    - file flags are not displayed if there are none of them
+    - "OS flags" changed to "Operating system"
+    - "Sub-type" changed to "File subtype"
+    - file subtype names are displayed in the full form
+    - changed positions of some fields 
+    - CrFileVerInfo.txt replaced with file_id.diz
+
+1.1 - released in 2005 by Creware
