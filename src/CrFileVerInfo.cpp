@@ -104,7 +104,7 @@ TCHAR* DialogAddLinePlaceholder(PDIALOG pDlg, SIZE_T nChars)
 	return pDlg->Lines[pDlg->nLines++];
 }
 
-int DialogShow(PDIALOG pDlg)
+intptr_t DialogShow(PDIALOG pDlg)
 {
 	if ( pDlg->nLines == 0 ) return -1;
 
@@ -196,14 +196,14 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 				DWORD    dwFlags;
 				TCHAR    *pszString;
 
-				FSF.sprintf(sz, TEXT("File version      %d.%d.%d.%d"), 
+				FSF.snprintf(sz, 128, TEXT("File version      %d.%d.%d.%d"), 
 					HIWORD(pFFI->dwFileVersionMS),
 					LOWORD(pFFI->dwFileVersionMS),
 					HIWORD(pFFI->dwFileVersionLS),
 					LOWORD(pFFI->dwFileVersionLS) );
 				DialogAddLine(pDlg, sz);
 
-				FSF.sprintf(sz, TEXT("Product version   %d.%d.%d.%d"), 
+				FSF.snprintf(sz, 128, TEXT("Product version   %d.%d.%d.%d"), 
 					HIWORD(pFFI->dwProductVersionMS),
 					LOWORD(pFFI->dwProductVersionMS),
 					HIWORD(pFFI->dwProductVersionLS),
@@ -220,7 +220,7 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 				case VFT_STATIC_LIB: pszString = TEXT("static-link library"); break;
 				default:             pszString = TEXT("unknown");
 				}
-				FSF.sprintf(sz, TEXT("File type         %s"), pszString);
+				FSF.snprintf(sz, 128, TEXT("File type         %s"), pszString);
 				DialogAddLine(pDlg, sz);
 
 				if (pFFI->dwFileType == VFT_DRV)
@@ -241,7 +241,7 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 					case VFT2_DRV_VERSIONED_PRINTER: pszString = TEXT("versioned printer driver");
 					default:                         pszString = TEXT("unknown");
 					}
-					FSF.sprintf(sz, TEXT("File subtype      %s"), pszString);
+					FSF.snprintf(sz, 128, TEXT("File subtype      %s"), pszString);
 					DialogAddLine(pDlg, sz);
 				}
 				else if (pFFI->dwFileType == VFT_FONT)
@@ -253,12 +253,12 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 					case VFT2_FONT_TRUETYPE: pszString = TEXT("TrueType font");
 					default:                 pszString = TEXT("unknown");
 					}
-					FSF.sprintf(sz, TEXT("File subtype      %s"), pszString);
+					FSF.snprintf(sz, 128, TEXT("File subtype      %s"), pszString);
 					DialogAddLine(pDlg, sz);
 				}
 				else if (pFFI->dwFileType == VFT_VXD)
 				{
-					FSF.sprintf(sz, TEXT("Device ID         0x%04X"), pFFI->dwFileSubtype);
+					FSF.snprintf(sz, 128, TEXT("Device ID         0x%04X"), pFFI->dwFileSubtype);
 					DialogAddLine(pDlg, sz);
 				}
 
@@ -293,7 +293,7 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 				case VOS_OS232_PM32:    pszString = TEXT("OS/2 with PM (32 bit)"); break;
 				default:                pszString = TEXT("unknown");
 				}
-				FSF.sprintf(sz, TEXT("Operating system  %s"), pszString);
+				FSF.snprintf(sz, 128, TEXT("Operating system  %s"), pszString);
 				DialogAddLine(pDlg, sz);
 
 				if (pFFI->dwFileDateLS | pFFI->dwFileDateMS)
@@ -310,7 +310,7 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 
 						FileTimeToSystemTime(&ftLocal, &stCreate);
 
-						FSF.sprintf(sz, TEXT("File date         %02d/%02d/%d  %02d:%02d:%02d.%03d"),
+						FSF.snprintf(sz, 128, TEXT("File date         %02d/%02d/%d  %02d:%02d:%02d.%03d"),
 							stCreate.wDay, stCreate.wMonth, stCreate.wYear,
 							stCreate.wHour, stCreate.wMinute, stCreate.wSecond, 
 							stCreate.wMilliseconds);
@@ -366,7 +366,7 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 
 							if ( !bStringTableFound )
 							{
-								FSF.sprintf(&pszStringName[16], TEXT("%04x%04x"), pLangAndCodePage[i].wLanguage, pLangAndCodePage[i].wCodePage);
+								FSF.snprintf(&pszStringName[16], 8, TEXT("%04x%04x"), pLangAndCodePage[i].wLanguage, pLangAndCodePage[i].wCodePage);
 
 								if ( VerQueryValue(pData, pszStringName, (LPVOID *) &pszString, &siz) )
 								{
@@ -427,8 +427,8 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 						TEXT("000004B0")  // no language and Unicode character set
 					};
 
-					FSF.sprintf(pszLangCP[2], TEXT("%04X%04X"), GetSystemDefaultLangID(), GetACP());
-					FSF.sprintf(pszLangCP[3], TEXT("%04X04B0"), GetSystemDefaultLangID());
+					FSF.snprintf(pszLangCP[2], 8, TEXT("%04X%04X"), GetSystemDefaultLangID(), GetACP());
+					FSF.snprintf(pszLangCP[3], 8, TEXT("%04X04B0"), GetSystemDefaultLangID());
 
 					for ( int i = 0; i < ARRAYSIZE(pszLangCP); i++ )
 					{
@@ -566,7 +566,7 @@ void ProcessPanelItem()
 
 #ifdef UNICODE
 #if FARMANAGERVERSION_MAJOR >= 3
-		INT_PTR nPPItemSize = Info.PanelControl(PANEL_ACTIVE, FCTL_GETCURRENTPANELITEM, 0, NULL);
+		intptr_t nPPItemSize = Info.PanelControl(PANEL_ACTIVE, FCTL_GETCURRENTPANELITEM, 0, NULL);
 #else
 		int nPPItemSize = Info.Control(PANEL_ACTIVE, FCTL_GETCURRENTPANELITEM, 0, NULL);
 #endif
@@ -574,7 +574,7 @@ void ProcessPanelItem()
 		struct PluginPanelItem *PPItem = (PluginPanelItem*) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nPPItemSize);
 
 #if FARMANAGERVERSION_MAJOR >= 3
-		FarGetPluginPanelItem gpi = { nPPItemSize, PPItem };
+		FarGetPluginPanelItem gpi = { sizeof(FarGetPluginPanelItem), nPPItemSize, PPItem };
 
 		Info.PanelControl(PANEL_ACTIVE, FCTL_GETCURRENTPANELITEM, 0, &gpi);
 
@@ -639,7 +639,7 @@ void WINAPI EXP_NAME(SetStartupInfo)(const struct PluginStartupInfo *Info)
 void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
 {
 	Info->StructSize = sizeof(GlobalInfo);
-	Info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2572, VS_RELEASE);
+	Info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2871, VS_RELEASE);
 	Info->Version = PLUGIN_VERSION;
 	Info->Guid = PLUGIN_GUID;
 	Info->Title = PLUGIN_TITLE;

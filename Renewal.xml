@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<renewal>
+	<!-- CrFileVerInfo -->
+	<plugin guid="{CC79335A-4CBB-4583-A5E8-6D68BE1628DF}">
+		<home arch="any">http://code.google.com/p/vertigo</home>
+		<url arch="any">http://code.google.com/p/vertigo/downloads/list</url>
+		<changelog arch="any">http://vertigo.googlecode.com/svn/trunk/CrFileVerInfo/History.txt</changelog>
+		<regex arch="any">//vertigo\.googlecode\.com/files/CrFileVerInfo_(\d+)\.(\d+)\.(\d+)\.(\d+)\.zip</regex>
+		<postinstall arch="x64">del /F /Q CrFileVerInfo.*&amp;&amp;del /F /Q CrFileVerInfo_x64.*&amp;&amp;del /F /Q CrFileVerInfoW.*&amp;&amp;del /F /Q CrFileVerInfoW_x64.*&amp;&amp;del /F /Q CrFileVerInfoW3.*</postinstall>
+		<postinstall arch="x86">del /F /Q CrFileVerInfo.*&amp;&amp;del /F /Q CrFileVerInfo_x64.*&amp;&amp;del /F /Q CrFileVerInfoW.*&amp;&amp;del /F /Q CrFileVerInfoW_x64.*&amp;&amp;del /F /Q CrFileVerInfoW3_x64.*</postinstall>
+	</plugin>
+</renewal>
