@@ -603,12 +603,16 @@ void ProcessPanelItem()
 			Info.Control(PANEL_ACTIVE, FCTL_GETPANELDIR, nPDirSize, (LONG_PTR) pszFilePath);
 #endif
 #else
+		TCHAR *pszCurDir = (TCHAR *) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(TCHAR) * nPDirSize + 1);
+
+		OemToChar(PInfo.CurDir, pszCurDir);
+
 		if ( (PInfo.PanelItems[PInfo.CurrentItem].FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY )
 		{
 			TCHAR *pszFileName = PInfo.PanelItems[PInfo.CurrentItem].FindData.cFileName;
 			TCHAR *pszFilePath = (TCHAR *) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(TCHAR) * (nPDirSize + 1 + lstrlen(pszFileName) + 1));
 
-			lstrcpy(pszFilePath, PInfo.CurDir);
+			lstrcpy(pszFilePath, pszCurDir);
 #endif // UNICODE
 
 			if ( lstrlen(pszFilePath) > 0 )
@@ -622,8 +626,11 @@ void ProcessPanelItem()
 
 			HeapFree(hHeap, 0, pszFilePath);
 		}
+
 #ifdef UNICODE
 		HeapFree(hHeap, 0, PPItem);
+#else
+		HeapFree(hHeap, 0, pszCurDir);
 #endif
 	}
 }
