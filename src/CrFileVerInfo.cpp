@@ -47,7 +47,7 @@ PDIALOG DialogCreate(const TCHAR* Title)
 {
 	PDIALOG pDlg = (PDIALOG) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(DIALOG) + (lstrlen(Title) + 1) * sizeof(TCHAR));
 
-	pDlg->Title = (TCHAR *) ((DWORD) pDlg + sizeof(DIALOG));
+	pDlg->Title = (TCHAR *) (pDlg + sizeof(DIALOG));
 
 	lstrcpy(pDlg->Title, Title);
 
