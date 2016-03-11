@@ -5,10 +5,10 @@
     <mod guid="{CC79335A-4CBB-4583-A5E8-6D68BE1628DF}">
       <homepage>https://github.com/Vertigo093i/Far-CrFileVerInfo</homepage>
       <changelog>https://github.com/Vertigo093i/Far-CrFileVerInfo/blob/master/History.txt</changelog>
-      <dlpage64>https://github.com/Vertigo093i/Far-CrFileVerInfo/releases</dlpage64>
-      <dlpage86>https://github.com/Vertigo093i/Far-CrFileVerInfo/releases</dlpage86>
-      <dlrgex64>/Vertigo093i/Far-CrFileVerInfo/releases/download/[^/]+/CrFileVerInfo_(\d+)\.(\d+)\.(\d+)\.(\d+)_x64\.(?:7z|zip)</dlrgex64>
-      <dlrgex86>/Vertigo093i/Far-CrFileVerInfo/releases/download/[^/]+/CrFileVerInfo_(\d+)\.(\d+)\.(\d+)\.(\d+)_x86\.(?:7z|zip)</dlrgex86>
+      <dlpage64>https://github.com/Vertigo093i/Far-CrFileVerInfo/releases/latest</dlpage64>
+      <dlpage86>https://github.com/Vertigo093i/Far-CrFileVerInfo/releases/latest</dlpage86>
+      <dlrgex64>/Vertigo093i/Far-CrFileVerInfo/releases/download/[^/]+/CrFileVerInfo_(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?_x64\.(?:7z|zip)</dlrgex64>
+      <dlrgex86>/Vertigo093i/Far-CrFileVerInfo/releases/download/[^/]+/CrFileVerInfo_(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?_x86\.(?:7z|zip)</dlrgex86>
       <postinstall64>del /F /Q CrFileVerInfo_x64.*&amp;&amp;del /F /Q CrFileVerInfoW_x64.*</postinstall64>
       <postinstall86>del /F /Q CrFileVerInfo.*&amp;&amp;del /F /Q CrFileVerInfoW.*</postinstall86>
     </mod>

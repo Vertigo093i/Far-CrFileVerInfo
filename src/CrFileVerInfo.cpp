@@ -22,19 +22,17 @@
 #define PLUGIN_TITLE TEXT("Version Info")
 
 #ifndef EXP_NAME
-#if UNICODE
 #if FARMANAGERVERSION_MAJOR >= 3
 #define EXP_NAME(p) p##W
-#else
+#elif FARMANAGERVERSION_MAJOR == 2
 #define EXP_NAME(p) _export p##W
-#endif
 #else
 #define EXP_NAME(p) _export p
 #endif
 #endif
 
-static struct PluginStartupInfo Info;
-static struct FarStandardFunctions FSF;
+PluginStartupInfo Info;
+FarStandardFunctions FSF;
 
 typedef struct TAG_DIALOG
 {
@@ -325,7 +323,8 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 
 				// the pszStringName buffer must fit at least this string:
 				// \StringFileInfo\12345678\OriginalFilename + 22 chars just in case
-				TCHAR pszStringName[1 + 14 + 1 + 8 + 1 + 16 + 1 + 22] = TEXT("\\StringFileInfo\\");
+				TCHAR pszStringName[1 + 14 + 1 + 8 + 1 + 16 + 1 + 22];
+				lstrcpy(pszStringName, TEXT("\\StringFileInfo\\"));
 
 				BOOL bStringTableFound = FALSE;
 
@@ -526,17 +525,16 @@ void ProcessFile(const TCHAR *szFilePath, const TCHAR *szFileName)
 
 void ProcessPanelItem()
 {
-	struct PanelInfo PInfo = { sizeof(PanelInfo) };
+	PanelInfo PInfo;
 
-#ifdef UNICODE
 #if FARMANAGERVERSION_MAJOR >= 3
+	PInfo.StructSize = sizeof(PanelInfo);
 	Info.PanelControl(PANEL_ACTIVE, FCTL_GETPANELINFO, 0, &PInfo);
-#else
+#elif FARMANAGERVERSION_MAJOR == 2
 	Info.Control(PANEL_ACTIVE, FCTL_GETPANELINFO, 0, (LONG_PTR) &PInfo);
-#endif
 #else
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETPANELINFO, &PInfo);
-#endif // UNICODE
+#endif
 
 	if ( PInfo.PanelType != PTYPE_FILEPANEL )
 	{
@@ -550,28 +548,26 @@ void ProcessPanelItem()
 		return;
 	}
 
-#ifdef UNICODE
 #if FARMANAGERVERSION_MAJOR >= 3
-	INT_PTR nPDirSize = Info.PanelControl(PANEL_ACTIVE, FCTL_GETPANELDIRECTORY, 0, NULL);
-#else
+	intptr_t nPDirSize = Info.PanelControl(PANEL_ACTIVE, FCTL_GETPANELDIRECTORY, 0, NULL);
+#elif FARMANAGERVERSION_MAJOR == 2
 	int nPDirSize = Info.Control(PANEL_ACTIVE, FCTL_GETPANELDIR, 0, NULL);
-#endif
 #else
 	int nPDirSize = lstrlen(PInfo.CurDir);
-#endif // UNICODE
+#endif
 
 	if ( nPDirSize )
 	{
 		HANDLE hHeap = GetProcessHeap();
 
-#ifdef UNICODE
+#if FARMANAGERVERSION_MAJOR >= 2
 #if FARMANAGERVERSION_MAJOR >= 3
-		intptr_t nPPItemSize = Info.PanelControl(PANEL_ACTIVE, FCTL_GETCURRENTPANELITEM, 0, NULL);
+		size_t nPPItemSize = Info.PanelControl(PANEL_ACTIVE, FCTL_GETCURRENTPANELITEM, 0, NULL);
 #else
 		int nPPItemSize = Info.Control(PANEL_ACTIVE, FCTL_GETCURRENTPANELITEM, 0, NULL);
 #endif
 
-		struct PluginPanelItem *PPItem = (PluginPanelItem*) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nPPItemSize);
+		PluginPanelItem *PPItem = (PluginPanelItem *) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nPPItemSize);
 
 #if FARMANAGERVERSION_MAJOR >= 3
 		FarGetPluginPanelItem gpi = { sizeof(FarGetPluginPanelItem), nPPItemSize, PPItem };
@@ -580,7 +576,7 @@ void ProcessPanelItem()
 
 		if ( (PPItem->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY )
 		{
-			struct FarPanelDirectory *PDir = (FarPanelDirectory*) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nPDirSize);
+			FarPanelDirectory *PDir = (FarPanelDirectory *) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nPDirSize);
 
 			PDir->StructSize = sizeof(FarPanelDirectory);
 
@@ -601,7 +597,7 @@ void ProcessPanelItem()
 			TCHAR *pszFilePath = (TCHAR *) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(TCHAR) * (nPDirSize + 1 + lstrlen(pszFileName) + 1));
 
 			Info.Control(PANEL_ACTIVE, FCTL_GETPANELDIR, nPDirSize, (LONG_PTR) pszFilePath);
-#endif
+#endif // FARMANAGERVERSION_MAJOR >= 3
 #else
 		TCHAR *pszCurDir = (TCHAR *) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(TCHAR) * nPDirSize + 1);
 
@@ -613,7 +609,7 @@ void ProcessPanelItem()
 			TCHAR *pszFilePath = (TCHAR *) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(TCHAR) * (nPDirSize + 1 + lstrlen(pszFileName) + 1));
 
 			lstrcpy(pszFilePath, pszCurDir);
-#endif // UNICODE
+#endif // FARMANAGERVERSION_MAJOR >= 2
 
 			if ( lstrlen(pszFilePath) > 0 )
 			{
@@ -627,7 +623,7 @@ void ProcessPanelItem()
 			HeapFree(hHeap, 0, pszFilePath);
 		}
 
-#ifdef UNICODE
+#if FARMANAGERVERSION_MAJOR >= 2
 		HeapFree(hHeap, 0, PPItem);
 #else
 		HeapFree(hHeap, 0, pszCurDir);
@@ -635,7 +631,7 @@ void ProcessPanelItem()
 	}
 }
 
-void WINAPI EXP_NAME(SetStartupInfo)(const struct PluginStartupInfo *Info)
+void WINAPI EXP_NAME(SetStartupInfo)(const PluginStartupInfo *Info)
 {
 	::Info = *Info;
 	::FSF = *Info->FSF;
@@ -643,7 +639,7 @@ void WINAPI EXP_NAME(SetStartupInfo)(const struct PluginStartupInfo *Info)
 }
 
 #if FARMANAGERVERSION_MAJOR >= 3
-void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
+void WINAPI GetGlobalInfoW(GlobalInfo *Info)
 {
 	Info->StructSize = sizeof(GlobalInfo);
 	Info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2871, VS_RELEASE);
@@ -660,7 +656,7 @@ int WINAPI GetMinFarVersionW()
 }
 #endif
 
-void WINAPI EXP_NAME(GetPluginInfo)(struct PluginInfo *Info)
+void WINAPI EXP_NAME(GetPluginInfo)(PluginInfo *Info)
 {
 	static TCHAR* PluginMenuStrings[1];
 	static TCHAR* CommandPrefix = TEXT("crver");
@@ -683,7 +679,7 @@ void WINAPI EXP_NAME(GetPluginInfo)(struct PluginInfo *Info)
 }
 
 #if FARMANAGERVERSION_MAJOR >= 3
-HANDLE WINAPI OpenW(const struct OpenInfo *Info)
+HANDLE WINAPI OpenW(const OpenInfo *Info)
 {
 	if ( Info->OpenFrom == OPEN_COMMANDLINE )
 	{
